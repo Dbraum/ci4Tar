@@ -15,8 +15,8 @@ on:
 
 env:
   # TODO: Change variable to your image's name.
-  URL: kubefed:v0.1.0-rc3
-  TAR_NAME: kubefed:v0.1.0-rc3
+  URL: https://github.com/kubernetes-sigs/kubebuilder/releases/download/v2.3.1/kubebuilder_2.3.1_darwin_amd64.tar.gz
+  TAR_NAME: kubebuilder_2.3.1_darwin_amd64.tar.gz
 
 jobs:
   push:
