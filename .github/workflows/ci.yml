@@ -1,0 +1,42 @@
+name: Docker
+
+on:
+  push:
+    # Publish `master` as Docker `latest` image.
+    branches:
+      - master
+
+    # Publish `v1.2.3` tags as releases.
+    tags:
+      - v*
+
+  # Run tests for any PRs.
+  pull_request:
+
+env:
+  # TODO: Change variable to your image's name.
+  IMAGE_NAME: quay.io/kubernetes-multicluster/kubefed:v0.1.0-rc3
+  TAR_NAME: kubefed:v0.1.0-rc3
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: |
+          docker pull $IMAGE_NAME
+          docker save $IMAGE_NAME | gzip > $TAR_NAME.tar.gz
+          ls -sh $TAR_NAME.tar.gz
+
+      # 设置阿里云OSS的 id/secret，存储到 github 的 secrets 中
+      - name: setup aliyun oss
+        uses: manyuanrong/setup-ossutil@master
+        with:
+          endpoint: oss-cn-shenzhen.aliyuncs.com
+          access-key-id: ${{ secrets.OSS_KEY_ID }}
+          access-key-secret: ${{ secrets.OSS_KEY_SECRET }}
+      - name: cp files to aliyun
+        run: ossutil cp -rf $TAR_NAME.tar.gz oss://oss4image/
